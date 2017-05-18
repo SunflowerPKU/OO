@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block body %}
+  <form class="form-horizontal" role="form" action="{{ url_for('signup') }}" method=post>
+    <div class="form-group">
+      <label class="control-label" for="username">Username:</label>
+      <input type="text" class="form-control" id="username" name="username">
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="password">Password:</label>
+      <input type="password" class="form-control" id="password" name="password">
+    </div>
+    <button type="submit" class="btn btn-primary" disabled>Sign Up</button>
+  </form>
+{% endblock %}
+
+{% block script %}
+  <script>
+    $(function () {
+      $('#username').on('keyup', function () {
+        var length = $(this).val().length;
+        if (length === 0)
+          $('button').prop('disabled', true);
+        else
+          $('button').prop('disabled', false);
+      });
+    });
+  </script>
+{% endblock %}

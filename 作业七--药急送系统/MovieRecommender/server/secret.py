@@ -1,0 +1,5 @@
+conn_str = 'postgresql://movie:nerds@52.87.217.221:5432/movie'
+secret_key = 'WGNgnsDgMkmGdjH0gKh9'
+engine_url = 'https://52.87.217.221:8000/queries.json'
+eventserver_url = 'http://52.87.217.221:7070'
+access_key = 'fWPlsqEj5AOv4EQSzkCvz-yoOpjeuPnMyWimv_nZS1pT5ndWzEme8S0hspWVzfo-'

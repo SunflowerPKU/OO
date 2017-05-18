@@ -1,0 +1,61 @@
+{% from "macros.html" import nav_link with context %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>MovieRecommender</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="{{ url_for('home') }}">MovieRecommender</a>
+    </div>
+    <ul class="nav navbar-nav">
+      {{ nav_link('home', 'Recommendations') }}
+      {{ nav_link('myratings', 'My Ratings') }}
+    </ul>
+    <form class="navbar-form navbar-left" role="search" action="{{ url_for('search') }}" method=get>
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search" name="keyword">
+      </div>
+      <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+    <ul class="nav navbar-nav navbar-right">
+      {% if session.username %}
+        <li><a href="#"><span class="glyphicon glyphicon-user"></span> {{ session.username }}</a></li>
+        <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+      {% else %}
+        <li><a href="{{ url_for('signup') }}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  {% if error %}
+    <div class="alert alert-danger fade in">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      {{ error | safe }}
+    </div>
+  {% endif %}
+  {% for message in get_flashed_messages() %}
+    <div class="alert alert-info fade in">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      {{ message | safe }}
+    </div>
+  {% endfor %}
+  {% block body %}{% endblock %}
+</div>
+
+{% block script %}{% endblock %}
+
+</body>
+</html>
