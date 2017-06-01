@@ -99,7 +99,7 @@ def index_():
     FROM medicine
     LIMIT %s''', 10)
     medicine_dict = get_medicine(cur)
-    print(len(medicine_dict))
+    #print(len(medicine_dict))
     username=session['username']
     cur1 = g.conn.execute('''SELECT account FROM users WHERE username = %s''', username)
     cur1_account = cur1.fetchone()
@@ -126,7 +126,7 @@ def signin():
         LIMIT %s''', 10)  
 
         medicine_dict = get_medicine(cur)
-        print(len(medicine_dict))
+        #print(len(medicine_dict))
 
         cur1 = g.conn.execute('''SELECT account FROM users WHERE username = %s AND password = %s''', (username, password))
         cur1_account = cur1.fetchone()
@@ -332,7 +332,7 @@ def profile_edit():
     email = request.form.get('user-email')
     description = request.form.get('user-description')
     # username=session['username']
-    print (session['username'],fullname,gender,mobile,email, description)
+    #print (session['username'],fullname,gender,mobile,email, description)
     g.conn.execute('Delete from userinfo where username=%s', session['username'])
     g.conn.execute('INSERT INTO userinfo (username,fullname,gender,mobile,email, description) VALUES (%s,%s, %s, %s,%s,%s)', (session['username'],fullname,gender,mobile,email, description))
     # if fullname!=[]
@@ -344,14 +344,14 @@ def profile_edit():
 
 def get_medicine(cur):
     medicine_info={}
-    print("cur")
+    #print("cur")
     for row in cur:
         medicine_info[row[0]]=(row[1], row[2],row[3],row[4])
-        print(row)
+        #print(row)
 
     #medicine_info = {row[0]: (row[1], row[2],row[3]) for row in cur}
     medicines = []
-    print(len(medicine_info))
+    #print(len(medicine_info))
     for key in medicine_info:
         medicines.append({'medicine_id': key,
                        'price': str(medicine_info[key][0]),
@@ -441,6 +441,9 @@ def pay():
     
     med_price = {}
     total = 0
+    minprice = 100000
+    total_number = 0
+    discount = 0
     cur = g.conn.execute('SELECT medicine_id, num FROM shopping_cart WHERE username = %s', session['username'])
     cur_shoppingcart = cur.fetchall()
     for i in range(len(cur_shoppingcart)):
@@ -449,10 +452,21 @@ def pay():
         price = cur_price[0]
         id = cur_shoppingcart[i][0]
         med_price[id] = price
-
+    
     for i in range(len(cur_shoppingcart)):
+        id = cur_shoppingcart[i][0]
+        if float(med_price[id]) < minprice:
+            minprice = float(med_price[id])
+        total_number += float(cur_shoppingcart[i][1])
         total += float(med_price[id])*float(cur_shoppingcart[i][1])
 
+    #购买药品数超过两件时，最低价格药品免单
+    if total_number >= 2:
+        total = total - minprice
+        discount = minprice
+    else:
+        discount = 0
+    #print('discount %s' % discount)
     cur_account = g.conn.execute('SELECT account FROM users WHERE username = %s', session['username'])
     cur_account = cur_account.fetchone()
     user_account = float(cur_account[0])
@@ -475,18 +489,27 @@ def pay():
 
     else:
         pass
-
-
-    cur = g.conn.execute('''
-    SELECT *
-    FROM medicine
-    LIMIT %s''', 10)
+    
+    medicine_info_list = []
+    cur = g.conn.execute('SELECT * FROM medicine WHERE medicine_id in (SELECT medicine_id FROM (SELECT * FROM shopping_cart WHERE username like %s) AS a)',session['username'])
+         
     medicine_dict = get_medicine(cur)
-    print(len(medicine_dict))
-    username=session['username']
-    cur1 = g.conn.execute('''SELECT account FROM users WHERE username = %s''', username)
+
+    show = "我的购物车"
+
+    cur1 = g.conn.execute('SELECT account FROM users WHERE username = %s ',session['username'])
     cur1_account = cur1.fetchone()
-    return render_template('index.html', this_username = session['username'], this_account = cur1_account[0], show_what = "热销药品", medicine_info_list = medicine_dict)
+
+    cur2 = g.conn.execute('SELECT medicine_id, num FROM shopping_cart where username = %s', session['username'])
+    cart_info={}
+    for row in cur2:
+        cart_info[row[0]]=(row[1])
+
+    for key in cart_info:
+        for i in range(len(medicine_dict)):
+            if medicine_dict[i]['medicine_id'] == key:
+                medicine_dict[i]['number'] = cart_info[key]
+    return render_template('shoppingcart.html', this_username = session['username'], this_account = cur1_account[0], this_discount = discount, show_what = show, medicine_info_list = medicine_dict)
 
 # Main function
 if __name__ == '__main__':

@@ -144,8 +144,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 				<i class="fa fa-angle-right"></i>
 				<span>药品展示</span>
 				<i class="fa fa-angle-right"></i>
-				<!--<span>{{show_what}}</span>-->
-				<span>热销药品</span>
+				<span>{{show_what}}</span>
 				</h2>
 		    </div>
 
@@ -260,13 +259,20 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             function click_clean() {
 
 								btn1.style.backgroundColor = "#D95459";
-	                            alert('购物车已清空！')
+	                            alert('购物车已清空！');
 							
 							}
 
 							function click_pay(){
 								btn2.style.backgroundColor = "#D95459";
-	                            alert('结算成功！')
+								var discount = {{this_discount}};
+								if (parseInt(discount)>0)
+									alert('结算成功! 购买数量大于两件，已优惠'+discount+	'元。');
+								else
+								{
+									alert('结算成功！');
+								}
+								
 							}
         </script>
 		<!---->
