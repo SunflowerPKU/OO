@@ -1,0 +1,18 @@
+[甲方需求变更地址](https://github.com/wcl199343/OO-Course/blob/master/%E4%BD%9C%E4%B8%9A8%EF%BC%9A%E9%9C%80%E6%B1%82%E5%8F%98%E6%9B%B4.md)
+
+
+基于甲方给出的两种需求变更方案，我方选择后者，即购买两种以上有一定的优惠政策。
+为了实现这一需求，需要更改原来的购物车结算界面的价格算法。具体来说，在我方实现购物车结算界面的ShoppingCart.jsp文件中，增加一段条件判断代码：
+
+    <%
+    }}
+    if (totalcount > 2){
+    discount = allTotalPrice * 0.2; 
+    BigDecimal   b   =   new   BigDecimal(discount);  
+    discount   =   b.setScale(1,   BigDecimal.ROUND_HALF_UP).doubleValue();
+    }else{						
+    discount = 0.0;
+    }
+    %>
+  
+即可实现所需要的新的功能。
